@@ -6,16 +6,18 @@ using SadConsole.Input;
 using SadRogue.Primitives.SpatialMaps;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
+using SadRogue.Primitives.SerializedTypes;
 
 class Map : ScreenSurface{
 
     //ScreenSurface mapScreen;
     EntityManager em = new EntityManager();
     public EnemyEntityManager enemyEntityManager = new();
-    public Entity player {get; private set;}
+    public Player player {get; private set;}
     int height;
     int width;
     public Tile[,] tiles;
+    public int[,] dijkstraMap;
     HashSet<Point> visibleTiles = new();
     HashSet<Point> seenTiles = new();
     Random rand = new Random();
@@ -30,12 +32,15 @@ class Map : ScreenSurface{
         this.width = width;
 
         tiles = new Tile[width,height];
+        dijkstraMap = new int[width,height];
         FillTiles();
         
-        player = new Entity(new Entity.SingleCell(Color.White, Color.AnsiBlack, '@'), 100)
+        /* player = new Entity(new Entity.SingleCell(Color.White, Color.AnsiBlack, '@'), 100)
         {
             Position = new Point(1, 1),
-        };
+        }; */
+        player = new Player();
+        player.Position = new Point(1,1);
         
         GenerateMap();    
 
@@ -91,7 +96,7 @@ class Map : ScreenSurface{
     void PlaceEntities(RectangularRoom room){
 
         Point spawnPoint = room.InnerArea()[rand.Next(room.InnerArea().Count)];
-        Enemy enemy = entityFactory.GenericEnemy();
+        Enemy enemy = entityFactory.GenericEnemy(this);
         enemyEntityManager.Add(enemy);
         enemy.Position = spawnPoint;
      }
@@ -185,16 +190,75 @@ class Map : ScreenSurface{
         foreach(Point point in visibleTiles){
             this.Surface.SetCellAppearance(point.X, point.Y, this.tiles[point.X,point.Y].glyphLight);
         }
+        //ComputeDijkstra();
+        for(int i = 0; i < dijkstraMap.GetLength(0); i++){
+            for ( int j = 0 ; j < dijkstraMap.GetLength(1); j ++){
+                
+                if(dijkstraMap[i,j] != int.MaxValue) this.Surface.SetCellAppearance(i, j, new ColoredGlyph(Color.Blue, Color.Black, 48 + dijkstraMap[i,j]));
+            }
+        }
     }
 
     public void HandleEntities(){
         foreach(Enemy enemy in enemyEntityManager.Entities){
             if(visibleTiles.Contains(enemy.Position)){
                 enemy.IsVisible = true;
+                enemy.Perform(player);
             }
             else{
                 enemy.IsVisible = false;
             }
+        }
+        //Handle Item entities
+    }
+
+    public string GetEntityAt(Point point){
+        string entityName = "";
+        foreach(Enemy enemy in enemyEntityManager){
+            if(enemy.IsVisible && enemy.Position == point){
+                entityName = enemy.Name;
+            }
+        }
+
+        return entityName;
+    }
+
+    public void ComputeDijkstra(){
+
+        for(int i = 0; i < dijkstraMap.GetLength(0); i++){
+            for ( int j = 0 ; j < dijkstraMap.GetLength(1); j ++){
+                
+                dijkstraMap[i,j] = int.MaxValue;
+            }
+        }
+
+        List<Point> queue = new(){player.Position};
+        dijkstraMap[queue[0].X,queue[0].Y] = 0;
+
+        
+        while(queue.Count > 0){
+            Point visited = queue[0];
+            List<Point> newPoints = new(){
+                new Point(visited.X + 1, visited.Y),
+                new Point(visited.X, visited.Y + 1),
+                new Point(visited.X - 1, visited.Y),
+                new Point(visited.X, visited.Y - 1)
+                };
+            foreach(Point point in newPoints){
+                if(point.X < 0) continue;
+                if(point.Y < 0) continue;
+                if(point.X >= dijkstraMap.GetLength(0)) continue;
+                if(point.Y >= dijkstraMap.GetLength(1)) continue;
+                if(dijkstraMap[point.X,point.Y] < int.MaxValue) continue;
+                if(!tiles[point.X,point.Y].walkable) continue;
+
+                dijkstraMap[point.X, point.Y] = dijkstraMap[visited.X,visited.Y] + 1;
+                queue.Add(point);
+            }
+
+            queue.RemoveAt(0);
+            
+
         }
     }
 

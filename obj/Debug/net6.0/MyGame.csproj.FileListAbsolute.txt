@@ -56,3 +56,4 @@ C:\Dev\Roguelike\Roguelike-Test\obj\Debug\net6.0\refint\MyGame.dll
 C:\Dev\Roguelike\Roguelike-Test\obj\Debug\net6.0\MyGame.pdb
 C:\Dev\Roguelike\Roguelike-Test\obj\Debug\net6.0\MyGame.genruntimeconfig.cache
 C:\Dev\Roguelike\Roguelike-Test\obj\Debug\net6.0\ref\MyGame.dll
+C:\Dev\Roguelike\Roguelike-Test\obj\Debug\net6.0\MyGame.sourcelink.json

@@ -60,12 +60,16 @@ class MapScreen : Console{
 
             if(!gameMap.tiles[newPosition.X,newPosition.Y].walkable) return false;
 
-            if(gameMap.blockingEntity(newPosition, gameMap.enemyEntityManager.EntitiesVisible)) return false;
+            if(gameMap.blockingEntity(newPosition, gameMap.enemyEntityManager.EntitiesVisible)){
+                gameMap.player.MeleeAttack(newPosition);
+                return true;
+            } //return false;
 
             gameMap.player.Position = newPosition;
             gameMap.UpdateFOV();
             gameMap.RenderTiles();
             gameMap.HandleEntities();
+            gameMap.ComputeDijkstra();
             return true;
         }
 

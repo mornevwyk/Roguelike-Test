@@ -98,5 +98,9 @@ public static class Algorithms
         }
     }
 
-    
+    public static List<Point> GetPath(Point p0, Point p1){
+        List<Point> path = new();
+
+        return path;
+    }
 }
