@@ -23,6 +23,10 @@ class Enemy: MapEntity{
         this.Position = new Point(this.Position.X + x, this.Position.Y + y);
     }
 
+    public float Distance(){
+        return MathF.Sqrt(MathF.Pow(this.Position.X - gameMap.player.Position.X,2) + MathF.Pow(this.Position.Y - gameMap.player.Position.Y,2));
+    }
+
     public void Perform(Player player){
         this.ai?.TakeTurn(this, player, gameMap);
     }

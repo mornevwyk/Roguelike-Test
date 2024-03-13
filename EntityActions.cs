@@ -18,9 +18,8 @@ class MoveAction{
 
         if(!entity.gameMap.tiles[newPosition.X,newPosition.Y].walkable) return;
 
-        if(entity.gameMap.blockingEntity(newPosition, entity.gameMap.enemyEntityManager.EntitiesVisible)){
-                entity.gameMap.player.MeleeAttack(newPosition);
-                entity.gameMap.HandleEntities();
+        if(entity.gameMap.blockingEntity(newPosition, entity.gameMap.mapEntityManager.EntitiesVisible)){
+                //Enemy Action for this situation
                 return;
             }
 
