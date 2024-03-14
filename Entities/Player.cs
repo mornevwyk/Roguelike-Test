@@ -1,13 +1,12 @@
 using System.Security.Cryptography;
 using SadConsole.Entities;
 
-class Player : Entity{
-    int health = 20;
-    int strength = 4;
-    public Player()
-        :base(new Entity.SingleCell(Color.White, Color.AnsiBlack, '@'), 100){}
+class Player : Actor{
+    public Player(Map gameMap)
+        :base(new SingleCell(Color.Blue, Color.AnsiWhite, '@'), gameMap, 100){
+            this.Name = "You";
+            this.health = 30;
+            this.strength = 3;
+        }
 
-    public void MeleeAttack(Point position){
-        Actions.LogEvent?.Invoke($"You attacked for {RandomNumberGenerator.GetInt32(10)} damage!");
-    }
 }

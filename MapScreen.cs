@@ -30,14 +30,17 @@ class MapScreen : Console{
 
         bool keyHit = false;
         Point newPosition = (0, 0);
+        Point dXdY = (0,0);
         // Process UP/DOWN movements
         if (info.IsKeyPressed(Keys.Up))
         {
+            dXdY = new Point(0, -1);
             newPosition = gameMap.player.Position + (0, -1);
             keyHit = true;
         }
         else if (info.IsKeyPressed(Keys.Down))
         {
+            dXdY = new Point(0, 1);
             newPosition = gameMap.player.Position + (0, 1);
             keyHit = true;
         }
@@ -45,11 +48,13 @@ class MapScreen : Console{
         // Process LEFT/RIGHT movements
         if (info.IsKeyPressed(Keys.Left))
         {
+            dXdY = new Point(-1, 0);
             newPosition = gameMap.player.Position + (-1, 0);
             keyHit = true;
         }
         else if (info.IsKeyPressed(Keys.Right))
         {
+            dXdY = new Point(1, 0);
             newPosition = gameMap.player.Position + (1, 0);
             keyHit = true;
         }
@@ -60,12 +65,15 @@ class MapScreen : Console{
 
             if(!gameMap.tiles[newPosition.X,newPosition.Y].walkable) return false;
 
-            if(gameMap.blockingEntity(newPosition, gameMap.mapEntityManager.EntitiesVisible)){
-                gameMap.player.MeleeAttack(newPosition);
+            /* if(gameMap.blockingEntity(newPosition, gameMap.mapEntityManager.EntitiesVisible)){
+                //gameMap.player.MeleeAttack(newPosition);
+                MeleeAction action = new((MapEntity)gameMap.player, dXdY.X, dXdY.Y);
+                action.Perform();
                 return true;
-            }
-
-            gameMap.player.Position = newPosition;
+            } */
+            BumpAction action = new BumpAction(gameMap.player, dXdY.X, dXdY.Y);
+            action.Perform();
+            //gameMap.player.Position = newPosition;
             gameMap.UpdateFOV();
             gameMap.HandleEntities();
             gameMap.ComputeDijkstra();

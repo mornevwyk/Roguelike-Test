@@ -2,9 +2,6 @@ using SadConsole.Entities;
 using SadConsole.Input;
 
 class Map : ScreenSurface{
-
-    //ScreenSurface mapScreen;
-    //EntityManager em = new EntityManager();
     public MapEntityManager mapEntityManager = new();
     public Player player {get; private set;}
     int height;
@@ -28,12 +25,12 @@ class Map : ScreenSurface{
         dijkstraMap = new int[width,height];
         FillTiles();
         
-        player = new Player();
-        player.Position = new Point(1,1);
+        player = new Player(this);
+        //player.Position = new Point(1,1);
+        mapEntityManager.Add(player);
         
         GenerateMap();    
 
-        mapEntityManager.Add(player);
         UpdateFOV();
         RenderTiles();
 
@@ -166,7 +163,10 @@ class Map : ScreenSurface{
         foreach(Point point in visibleTiles){
             this.Surface.SetCellAppearance(point.X, point.Y, this.tiles[point.X,point.Y].glyphLight);
         }
-        //ComputeDijkstra();
+        
+    }
+
+    public void RenderDijkstraMap(){
         for(int i = 0; i < dijkstraMap.GetLength(0); i++){
             for ( int j = 0 ; j < dijkstraMap.GetLength(1); j ++){
                 
@@ -188,7 +188,7 @@ class Map : ScreenSurface{
         //Handle Item entities
     }
 
-    public string GetEntityAt(Point point){
+    public string GetEntityNameAt(Point point){
         string entityName = "";
         foreach(Enemy enemy in mapEntityManager.GetEnemyEntities()){
             if(enemy.IsVisible && enemy.Position == point){
@@ -199,8 +199,22 @@ class Map : ScreenSurface{
         return entityName;
     }
 
-    public void ComputeDijkstra(){
+    public Actor? GetEntityAt(Point point){
+        /* foreach(Enemy enemy in mapEntityManager.GetEnemyEntities()){
+            if(enemy.IsVisible && enemy.Position == point){
+                return enemy;
+            }
+        }
+        return null; */
+        foreach(Actor actor in mapEntityManager.Entities){
+            if(actor.IsVisible && actor.Position == point){
+                return actor;
+            }
+        }
+        return null;
+    }
 
+    public void ComputeDijkstra(){
         for(int i = 0; i < dijkstraMap.GetLength(0); i++){
             for ( int j = 0 ; j < dijkstraMap.GetLength(1); j ++){
                 dijkstraMap[i,j] = int.MaxValue;
