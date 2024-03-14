@@ -75,9 +75,10 @@ class MapScreen : Console{
             action.Perform();
             //gameMap.player.Position = newPosition;
             gameMap.UpdateFOV();
-            gameMap.HandleEntities();
             gameMap.ComputeDijkstra();
+            gameMap.HandleEntities();
             gameMap.RenderTiles();
+            gameMap.ComputeDijkstra();
             return true;
         }
 
@@ -87,11 +88,6 @@ class MapScreen : Console{
 
         return false;
     }
-
-    /* private void HandleMouseClick(object? sender, MouseScreenObjectState e)
-    {
-        console.Print(0,3,"hello");
-    } */
     
     public override bool ProcessMouse(MouseScreenObjectState state){
         //base.ProcessMouse(state);

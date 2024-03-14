@@ -3,6 +3,7 @@ using SadConsole.Input;
 
 class Map : ScreenSurface{
     public MapEntityManager mapEntityManager = new();
+    public StaticEntityManager staticEntityManager = new();
     public Player player {get; private set;}
     int height;
     int width;
@@ -34,6 +35,7 @@ class Map : ScreenSurface{
         UpdateFOV();
         RenderTiles();
 
+        SadComponents.Add(staticEntityManager);
         SadComponents.Add(mapEntityManager);
 
     }
@@ -139,7 +141,7 @@ class Map : ScreenSurface{
     public void UpdateFOV(){
         Point center = this.player.Position;
         visibleTiles.Clear();
-        Algorithms.FOV360(center, 8, this , tiles, (x, y, z, w) => FOVMethod(x, y, z, w));
+        Algorithms.FOV360(center, 12, this , tiles, (x, y, z, w) => FOVMethod(x, y, z, w));
     }
 
     public bool FOVMethod(int x, int y, ScreenSurface surface, Tile[,] tiles){
@@ -244,6 +246,9 @@ class Map : ScreenSurface{
                 queue.Add(point);
             }
             queue.RemoveAt(0);   
+        }
+        foreach(Enemy enemy in mapEntityManager.GetEnemyEntities()){
+            dijkstraMap[enemy.Position.X, enemy.Position.Y] = int.MaxValue;
         }
     }
 

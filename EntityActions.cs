@@ -1,4 +1,5 @@
 using System.Net.Http.Headers;
+using System.Reflection.Metadata.Ecma335;
 using System.Security.Cryptography.X509Certificates;
 using SadConsole.Entities;
 
@@ -6,6 +7,13 @@ class EntityAction{
     public EntityAction(){}
 
     public virtual void Perform(){}
+}
+
+class WaitAction : EntityAction{
+    public WaitAction(){}
+    public override void Perform(){
+        return;
+    }
 }
 
 class ActionWithDirection : EntityAction{
@@ -69,8 +77,10 @@ class MeleeAction : ActionWithDirection{
             Actions.LogEvent?.Invoke($"{this.entity.Name} attacked {target.Name}");
             int damage = entity.strength;
             target.health -= damage;
+            target.OnHealthChanged();
             if(target.health <= 0){
                 target.ai = null;
+                target.Die();
                 Actions.LogEvent?.Invoke($"{target.Name} was slain");
             }
         }
