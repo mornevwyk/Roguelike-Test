@@ -187,6 +187,14 @@ class Map : ScreenSurface{
                 enemy.IsVisible = false;
             }
         }
+        foreach(Entity staticEntity in staticEntityManager.GetEntities()){
+            if(visibleTiles.Contains(staticEntity.Position)){
+                staticEntity.IsVisible = true;
+            }
+            else{
+                staticEntity.IsVisible = false;
+            }
+        }
         //Handle Item entities
     }
 
@@ -202,12 +210,6 @@ class Map : ScreenSurface{
     }
 
     public Actor? GetEntityAt(Point point){
-        /* foreach(Enemy enemy in mapEntityManager.GetEnemyEntities()){
-            if(enemy.IsVisible && enemy.Position == point){
-                return enemy;
-            }
-        }
-        return null; */
         foreach(Actor actor in mapEntityManager.Entities){
             if(actor.IsVisible && actor.Position == point){
                 return actor;

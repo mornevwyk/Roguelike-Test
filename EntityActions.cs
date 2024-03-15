@@ -96,12 +96,12 @@ class BumpAction : ActionWithDirection{
         Actor? target = TargetEntity();
         if (target == null){
             MoveAction action = new MoveAction(entity, dx, dy);
-            Actions.LogEvent?.Invoke(action.ToString());
+            //Actions.LogEvent?.Invoke(action.ToString());
             action.Perform();
         }
         else{
             MeleeAction action = new MeleeAction(entity, dx, dy);
-            Actions.LogEvent?.Invoke(action.ToString());
+            //Actions.LogEvent?.Invoke(action.ToString());
             action.Perform();
         }
     }

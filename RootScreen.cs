@@ -35,11 +35,13 @@ class RootScreen : ScreenObject
     }
 
     public void GameOver(){
-        Console gameOverScreen = new SadConsole.Console(50,20);
-        gameOverScreen.Position = new Point(GameSettings.GAME_WIDTH / 2, GameSettings.GAME_HEIGHT / 2);
+        Console gameOverScreen = new SadConsole.Console(12,3);
+        gameOverScreen.Position = new Point((GameSettings.GAME_WIDTH / 2) - gameOverScreen.Width/2, (GameSettings.GAME_HEIGHT / 2) - gameOverScreen.Height/2);
         gameOverScreen.Parent = this;
         this.Children.MoveToTop(gameOverScreen);
-        gameOverScreen.Cursor.Print("Game Over!");
+        gameOverScreen.DrawBox(new Rectangle(0, 0, gameOverScreen.Width, gameOverScreen.Height), ShapeParameters.CreateStyledBox(ICellSurface.ConnectedLineThin, new ColoredGlyph(Color.Gray, Color.Black)));
+        gameOverScreen.Print( 1,1,"Game Over!", Color.AnsiWhite, Color.AnsiBlack);
+        gameOverScreen.IsFocused = true;
     }
 
     public override bool ProcessMouse(MouseScreenObjectState state){
