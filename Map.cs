@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using SadConsole.Entities;
 using SadConsole.Input;
 
@@ -74,12 +75,20 @@ class Map : ScreenSurface{
         return room; 
     }
 
-    void PlaceEntities(RectangularRoom room){
+    void PlaceEntities(RectangularRoom room, int count){
 
-        Point spawnPoint = room.InnerArea()[rand.Next(room.InnerArea().Count)];
-        Enemy enemy = entityFactory.GenericEnemy(this);
-        mapEntityManager.Add(enemy);
-        enemy.Position = spawnPoint;
+        int enemyCount = 0;
+        List<Point> spawnPoints = new();
+        while(enemyCount < count){
+            Point spawnPoint = room.InnerArea()[rand.Next(room.InnerArea().Count)];
+            if(!spawnPoints.Contains(spawnPoint)){
+                Enemy enemy = entityFactory.GenericEnemy(this);
+                mapEntityManager.Add(enemy);
+                enemy.Position = spawnPoint;
+                spawnPoints.Add(spawnPoint);
+                enemyCount ++;
+            }
+        }
      }
 
      void GenerateMap(){
@@ -105,7 +114,7 @@ class Map : ScreenSurface{
 
             if(!intersects){
                 rooms.Add(newRoom);
-                PlaceEntities(newRoom);
+                PlaceEntities(newRoom, RandomNumberGenerator.GetInt32(4));
                 roomCount ++;
             }
         }
@@ -179,9 +188,28 @@ class Map : ScreenSurface{
 
     public void HandleEntities(){
         foreach(Enemy enemy in mapEntityManager.GetEnemyEntities()){
+            /* if(visibleTiles.Contains(enemy.Position)){
+                enemy.IsVisible = true;
+                enemy.SetActive(true);
+            }
+            else{
+                enemy.IsVisible = false;
+            }
+
+            if (enemy.active == true){
+                enemy.Perform(player);
+            } */
+
+            if(enemy.active == true){
+                enemy.Perform(player);
+            }
+
             if(visibleTiles.Contains(enemy.Position)){
                 enemy.IsVisible = true;
-                enemy.Perform(player);
+                if(!enemy.active){
+                    enemy.SetActive(true);
+                    enemy.Perform(player);
+                }
             }
             else{
                 enemy.IsVisible = false;

@@ -2,6 +2,7 @@ using SadConsole.Entities;
 
 class BaseAI{
     public Enemy enemy {get; private set;}
+    public bool active;
     public BaseAI(Enemy enemy){
         this.enemy = enemy;
     }
@@ -13,6 +14,7 @@ class BaseAI{
     public virtual void TakeTurn(Player player, Map gameMap){
         Actions.LogEvent?.Invoke("AI not implimented");
     }
+
 }
 
 class EnemyAI : BaseAI {
@@ -29,7 +31,9 @@ class EnemyAI : BaseAI {
             new Point(0, -1),
         };
         Point bestMove;
-        while(true){
+        int maxInterations = 10;
+        int iterations = 0;
+        while(true && iterations < maxInterations){
             bestMove = adjacentTiles[0];
             int value = this.enemy.gameMap.dijkstraMap[counter.X + bestMove.X, counter.Y + bestMove.Y];
 
@@ -54,43 +58,13 @@ class EnemyAI : BaseAI {
             counter = new Point(counter.X + bestMove.X, counter.Y + bestMove.Y);
             path.Add(bestMove);
             if(counter == destination) break;
+            iterations++;
         }
         return path;
     }
 
     public override void TakeTurn(Player player, Map gameMap)
     {
-        //int currentTile = gameMap.dijkstraMap[this.enemy.Position.X, this.enemy.Position.Y];
-
-        /* BumpAction[] moves = new BumpAction[4];
-        moves[0] = new BumpAction(enemy, 1, 0);
-        moves[1] = new BumpAction(enemy, 0, 1);
-        moves[2] = new BumpAction(enemy, -1, 0);
-        moves[3] = new BumpAction(enemy, 0, -1); */
-
-        /* Dictionary<string, BumpAction> possibleMoves = new(){
-            {"left", new BumpAction(enemy, -1, 0)},
-            {"right", new BumpAction(enemy, 1, 0)},
-            {"up", new BumpAction(enemy, 0, 1)},
-            {"down", new BumpAction(enemy, 0, -1)},
-        };     
-
-        Dictionary<string, Point> adjacentTiles = new(){
-            {"left",new Point(-1, 0)},
-            {"right",new Point(1, 0)},
-            {"up", new Point(0, 1)},
-            {"down", new Point(0, -1)},
-        };
-
-        var top = adjacentTiles.OrderBy(pair => gameMap.dijkstraMap[enemy.Position.X + pair.Value.X, enemy.Position.Y + pair.Value.Y])
-                                .ThenBy(pair => enemy.DistanceFrom(new Point(enemy.Position.X + pair.Value.X, enemy.Position.Y + pair.Value.Y))).Take(1)
-                                .ToDictionary(pair => pair.Key, pair => pair.Value);
-
-        string str = top.Keys.First(); */
-        //Actions.LogEvent?.Invoke(str);
-        //possibleMoves[str].Perform();
-        //Actions.LogEvent?.Invoke(possibleMoves[str].ToString());
-
         List<Point> path = ComputePath(player.Position);
         EntityAction action;
         if(new Point(this.enemy.Position.X + path[0].X, this.enemy.Position.Y + path[0].Y) == player.Position){
@@ -102,11 +76,4 @@ class EnemyAI : BaseAI {
         
         action.Perform();
     }
-
-    /* void RenderPath(List<Point> path){
-        foreach (Point point in path){
-            this.enemy.gameMap.Surface.SetCellAppearance(this.enemy.Position.X + point.X, this.enemy.Position.Y + point.Y, new ColoredGlyph(Color.Blue, Color.Black, 4));
-        }
-    } */
-
 }

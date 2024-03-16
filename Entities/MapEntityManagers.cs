@@ -39,4 +39,8 @@ class MapEntityManager : EntityManager{
         if(entity.GetType() == typeof(Enemy)) this.enemies.Add((Enemy)entity);
         if(entity.GetType() == typeof(Player)) this.player = (Player)entity;
     }
+
+    protected override void OnEntityRemoved(Entity entity){
+        this.enemies.Remove((Enemy)entity);
+    }
 }

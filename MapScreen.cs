@@ -72,13 +72,20 @@ class MapScreen : Console{
                 return true;
             } */
             BumpAction action = new BumpAction(gameMap.player, dXdY.X, dXdY.Y);
-            action.Perform();
-            //gameMap.player.Position = newPosition;
-            gameMap.UpdateFOV();
-            gameMap.ComputeDijkstra();
-            gameMap.HandleEntities();
-            gameMap.RenderTiles();
-            gameMap.ComputeDijkstra();
+            try{
+                action.Perform();
+                //gameMap.player.Position = newPosition;
+                gameMap.UpdateFOV();
+                gameMap.ComputeDijkstra();
+                gameMap.HandleEntities();
+                gameMap.RenderTiles();
+                gameMap.ComputeDijkstra();
+            }
+            catch (Exception exc)
+            {
+                System.Diagnostics.Debug.Print(exc.Message);  // get at entire error message w/ stacktrace
+                System.Diagnostics.Debug.Print(exc.StackTrace);  // or just the stacktrace
+            }
             return true;
         }
 

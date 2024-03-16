@@ -5,6 +5,7 @@ class Actor : Entity{
     public int health;
     public int strength;
     public EnemyAI? ai;
+    public bool active = false;
     public Actor(ColoredGlyph glyph, Map gameMap, int zIndex)
         :base(glyph, zIndex){
             this.IsVisible = false;
@@ -22,6 +23,10 @@ class Actor : Entity{
         this.gameMap.staticEntityManager.Add(corpse);
         this.gameMap.mapEntityManager.Remove(this);
         
+    }
+
+    public void SetActive(bool active){
+        this.active = active;
     }
 
     public virtual void OnHealthChanged(){return;}
