@@ -20,66 +20,10 @@ class MapScreen : Console{
             IsFocused = true;
 
             gameInput = new(this.gameMap);
-            //UseMouse = true;
-
-            //FocusOnMouseClick = true;
-            //this.MouseButtonClicked += HandleMouseClick;
-            /* console = new(30,10);
-            console.Position = new Point(0,0);
-            console.Parent = this; */
         }
 
     public override bool ProcessKeyboard(SadConsole.Input.Keyboard info){
-
-        
-
-        return gameInput.GetInput(info, gameInput.gameInputFunction);
-
-        /* bool keyHit = false;
-        //Point newPosition = (0, 0);
-        Point dXdY;
-        
-        //Movement buttons
-        if (info.IsKeyPressed(Keys.Up))
-        {
-            dXdY = new Point(0, -1);
-            keyHit = true;
-            inputHandler = new BaseGamePlay(this.gameMap, dXdY);
-        }
-        else if (info.IsKeyPressed(Keys.Down))
-        {
-            dXdY = new Point(0, 1);
-            keyHit = true;
-            inputHandler = new BaseGamePlay(this.gameMap, dXdY);
-        }
-        else if (info.IsKeyPressed(Keys.Left))
-        {
-            dXdY = new Point(-1, 0);
-            keyHit = true;
-            inputHandler = new BaseGamePlay(this.gameMap, dXdY);
-        }
-        else if (info.IsKeyPressed(Keys.Right))
-        {
-            dXdY = new Point(1, 0);
-            keyHit = true;
-            inputHandler = new BaseGamePlay(this.gameMap, dXdY);
-        }
-        //button to skip a turn
-        else if(info.IsKeyPressed(Keys.Delete)){
-            keyHit = true;
-            inputHandler = new WaitTurn(this.gameMap);
-        }
-
-        if (keyHit)
-        {
-            inputHandler.HandleInput();
-        }
-
-        if(info.IsKeyPressed(Keys.Escape)){
-            Game.Instance.MonoGameInstance.Exit();
-        }
-
-        return false; */
+        return gameInput.GetInput(info, gameInput.gameInputFunction);        
     }
     
     public override bool ProcessMouse(MouseScreenObjectState state){
@@ -143,9 +87,9 @@ class GameInput{
             keyHit = true;
             inputHandler = new WaitTurn(this.gameMap);
         }
-        else if(info.IsKeyPressed(Keys.Q)){
-            Actions.LogEvent?.Invoke("ENTERED MENU");
-            this.gameInputFunction = MenuInput;
+        else if(info.IsKeyPressed(Keys.I)){
+            Actions.toggleInventory?.Invoke();
+            this.gameInputFunction = InventoryMenuInput;
             return true;
         }
 
@@ -161,15 +105,29 @@ class GameInput{
         return false;
     }
 
-    public bool MenuInput(SadConsole.Input.Keyboard info){
+    public bool InventoryMenuInput(SadConsole.Input.Keyboard info){
         
         if(info.IsKeyPressed(Keys.Escape)){
-            Actions.LogEvent?.Invoke("EXITING MENU");
+            Actions.toggleInventory?.Invoke();
             this.gameInputFunction = BasicInput;
             return true;
         }
+
+        int inventoryCount = this.gameMap.player.inventory.GetInventory().Count;
+        foreach( AsciiKey key in info.KeysDown){
+            int value = (int)key.Key - 65;
+            if(value >= 0 && value < inventoryCount){
+                Actions.LogEvent?.Invoke($"used {this.gameMap.player.inventory.GetInventory()[value].Name}");
+                //activate item
+                Actions.toggleInventory?.Invoke();
+                this.gameInputFunction = BasicInput;
+                return true;
+            }
+        }
+        
         return false;
     }
+
 }
 
 class GameInputHandler{

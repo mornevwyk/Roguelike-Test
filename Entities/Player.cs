@@ -3,6 +3,7 @@ using SadConsole.Entities;
 
 class Player : Actor{
     int maxHealth;
+    public Inventory inventory = new();
     public Player(Map gameMap)
         :base(new SingleCell(Color.Blue, Color.AnsiWhite, '@'), gameMap, 100){
             this.Name = "You";
